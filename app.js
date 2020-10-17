@@ -11,12 +11,12 @@ connect.then((db) =>{
 
 require('./models/user')
 require('./models/movies')
-require('./models/poster')
 
 
 const app=express()
 app.use(express.json())
-app.use(require('./routes/auth'))
+app.use('/api/auth',require('./routes/auth'))
+app.use('/api/movies',require('./routes/movies'))
 
 const PORT=process.env.PORT ||5000
 app.listen(PORT,()=>{
