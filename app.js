@@ -16,6 +16,7 @@ require('./models/poster')
 
 const app=express()
 app.use(express.json())
+app.use(require('./routes/auth'))
 
 const PORT=process.env.PORT ||5000
 app.listen(PORT,()=>{
