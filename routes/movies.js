@@ -48,7 +48,7 @@ router.get('/mypost',requireLogin,async (req,res)=>{
         var movie_data=[]
         for(var index=0;index<reviews_data.reviews.length;index++){
             movie_data.push(await reviews.findOne({_id:reviews_data.reviews[index]})
-            .populate("movieId","movieId title genres poster imdb_link")
+            .populate("refMovieId","movieId title genres poster imdb_link")
             )
         }
         reviews_data.reviews=movie_data
