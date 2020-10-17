@@ -1,0 +1,23 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Backend for FLICK",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lakshya-20/flick-backend.git"
+  },
+  "author": "Lakshya Bansal",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lakshya-20/flick-backend/issues"
+  },
+  "homepage": "https://github.com/lakshya-20/flick-backend#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.10.9"
+  }
+}
