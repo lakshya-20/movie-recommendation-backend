@@ -5,6 +5,7 @@ const router = express.Router()
 const User = mongoose.model("User")
 const movies_data =  mongoose.model("movies_data")
 const reviews =  mongoose.model("reviews")
+const requireLogin = require('../middleware/requireLogin')
 
 router.get('/',(req,res)=>{
     reviews.find()
@@ -17,7 +18,7 @@ router.get('/',(req,res)=>{
     
 })
 
-router.post('/',(req,res)=>{
+router.post('/',requireLogin,(req,res)=>{
     const {movieId,userId,rating,comment}=req.body
     const review = new reviews({
         movieId,

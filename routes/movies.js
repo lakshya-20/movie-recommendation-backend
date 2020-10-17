@@ -5,6 +5,7 @@ const router = express.Router()
 const User = mongoose.model("User")
 const movies_data =  mongoose.model("movies_data")
 const reviews =  mongoose.model("reviews")
+const requireLogin = require('../middleware/requireLogin')
 
 router.get('/',(req,res)=>{
     movies_data.find()
@@ -16,7 +17,7 @@ router.get('/',(req,res)=>{
     
 })
 
-router.get('/mypost',async (req,res)=>{
+router.get('/mypost',requireLogin,async (req,res)=>{
     // User.findById(req.body.userId)
     // // .populate("reviews","_id movieId rating comment")
     // // .populate("reviews.movieId","_id title")
@@ -42,7 +43,7 @@ router.get('/mypost',async (req,res)=>{
     //     console.log(err)
     // })
     try{
-        const reviews_data=(await User.findOne({_id:req.body.userId}))
+        const reviews_data=(await User.findOne({_id:req.user._id}))
         reviews_data.password=undefined
         var movie_data=[]
         for(var index=0;index<reviews_data.reviews.length;index++){
