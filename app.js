@@ -1,12 +1,18 @@
 const express = require('express')
 const mongoose = require('mongoose')
 
-const {mongourl}=require('./config/key');
 
+const {mongourl}=require('./config/key');
 var connect=mongoose.connect(mongourl);
 connect.then((db) =>{
   console.log('Connected correctly to mongodb');
 },(err)=>{console.log(err)});
+
+
+require('./models/user')
+require('./models/movies')
+require('./models/poster')
+
 
 const app=express()
 app.use(express.json())
