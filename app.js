@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
-
+const cors = require('cors');
 
 const {mongourl}=require('./config/key');
 var connect=mongoose.connect(mongourl);
@@ -15,6 +15,7 @@ require('./models/review')
 
 const app=express()
 app.use(express.json())
+app.use(cors());
 app.use('/api/auth',require('./routes/auth'))
 app.use('/api/movies',require('./routes/movies'))
 app.use('/api/reviews',require('./routes/reviews'))
