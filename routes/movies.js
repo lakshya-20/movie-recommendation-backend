@@ -17,6 +17,15 @@ router.get('/',(req,res)=>{
     
 })
 
+router.get('/:movieId',(req,res)=>{
+    movies_data.findById(req.params.movieId)
+    .then((movie)=>{
+        res.json(movie)
+    }).catch(err=>{
+        console.log(err)
+    })
+})
+
 router.get('/mypost',requireLogin,async (req,res)=>{
     // User.findById(req.body.userId)
     // // .populate("reviews","_id movieId rating comment")
@@ -42,6 +51,7 @@ router.get('/mypost',requireLogin,async (req,res)=>{
     // .catch(err=>{
     //     console.log(err)
     // })
+    
     try{
         const reviews_data=(await User.findOne({_id:req.user._id}))
         reviews_data.password=undefined
