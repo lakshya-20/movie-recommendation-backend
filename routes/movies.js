@@ -10,6 +10,7 @@ const requireLogin = require('../middleware/requireLogin')
 router.get('/',(req,res)=>{
     movies_data.find()
     .then((movies)=>{
+        //console.log("Enteredss")
         res.json(movies)
     }).catch(err=>{
         console.log(err)

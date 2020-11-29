@@ -65,4 +65,16 @@ router.post('/',requireLogin,async(req,res)=>{
     
 })
 
+router.get('/:userId',(req,res)=>{
+    //console.log("entered")
+    reviews.find({userId:req.params.userId})
+    .populate("refMovieId","movieId title genres poster imdb_link")
+    .then((reviews)=>{
+        res.json(reviews)
+    }).catch(err=>{
+        console.log(err)
+    })
+    
+})
+
 module.exports=router

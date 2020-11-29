@@ -11,8 +11,8 @@ const reviews =  mongoose.model("reviews")
 
 router.post('/signup',(req,res)=>{
     //console.log("signin entered",req.body)
-    const {name,email,password,photo,gender,username}=req.body
-    if(!email || !password || !name || !gender || !username){
+    const {name,email,password,photo,gender}=req.body
+    if(!email || !password || !name || !gender){
         res.status(422).json({error:"all entries required"})
     }
     User.findOne({email:email})
@@ -28,7 +28,6 @@ router.post('/signup',(req,res)=>{
                 name,
                 photo,
                 gender,
-                username
             })
     
             user.save()
