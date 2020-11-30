@@ -9,42 +9,77 @@ const User = mongoose.model("User")
 const movies_data =  mongoose.model("movies_data")
 const reviews =  mongoose.model("reviews")
 
-router.post('/signup',(req,res)=>{
+router.post('/signup',async(req,res)=>{
     //console.log("signin entered",req.body)
     const {name,email,password,photo,gender}=req.body
     if(!email || !password || !name || !gender){
         res.status(422).json({error:"all entries required"})
     }
-    User.findOne({email:email})
-    .then((savedUser)=>{
+
+    try{
+        const savedUser=(await User.findOne({email:email}))
         if(savedUser){
+            console.log("User already exists with that mail")
             return res.status(422).json({error:"User already exists with that mail"})
         }
-        bcrypt.hash(password,12)
-        .then(hashedpassword=>{
-            const user = new User({
-                email,
-                password:hashedpassword,
-                name,
-                photo,
-                gender,
-            })
-    
-            user.save()
-            .then(user=>{
-                const token=jwt.sign({_id:user._id},JWT_SECRET)
-                const {_id,name,email,gender,photo,reviews}=user
-                res.json({token,user:{_id,name,email,gender,photo,reviews}})
-            })
-            .catch(err=>{
-                console.log(err)
-            })
+        var user = new User({
+            email,
+            password,
+            name,
+            photo,
+            gender,
         })
+        user.password=await bcrypt.hash(password,12)
+        await user.save()
+        user=(await User.findOne({email:email}))
         
-    })
-    .catch(err=>{
-        console.log(err)
-    })
+        user.password=undefined
+        var movie_data=[]
+        for(var index=0;index<user.reviews.length;index++){
+            movie_data.push(await reviews.findOne({_id:user.reviews[index]})
+            .populate("refMovieId","movieId title genres poster imdb_link")
+            )
+        }
+        user.reviews=movie_data
+        const token=jwt.sign({_id:user._id},JWT_SECRET)
+        res.json({token,user:user})
+
+    }catch(err){
+        console.log(err.message);
+		res.status(500).send('Server Error');
+    }
+
+
+    // User.findOne({email:email})
+    // .then((savedUser)=>{
+    //     if(savedUser){
+    //         return res.status(422).json({error:"User already exists with that mail"})
+    //     }
+    //     bcrypt.hash(password,12)
+    //     .then(hashedpassword=>{
+    //         const user = new User({
+    //             email,
+    //             password:hashedpassword,
+    //             name,
+    //             photo,
+    //             gender,
+    //         })
+    
+    //         user.save()
+    //         .then(user=>{
+    //             const token=jwt.sign({_id:user._id},JWT_SECRET)
+    //             const {_id,name,email,gender,photo,reviews}=user
+    //             res.json({token,user:{_id,name,email,gender,photo,reviews}})
+    //         })
+    //         .catch(err=>{
+    //             console.log(err)
+    //         })
+    //     })
+        
+    // })
+    // .catch(err=>{
+    //     console.log(err)
+    // })
 })
 
 router.post('/signin',async(req,res)=>{
