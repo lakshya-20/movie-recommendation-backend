@@ -1,13 +1,10 @@
 const express = require('express')
-const mongoose = require('mongoose')
 const cors = require('cors');
+const logger = require('morgan');
 
-const {mongourl}=require('./config/key');
-var connect=mongoose.connect(mongourl);
-connect.then((db) =>{
-  console.log('Connected correctly to mongodb');
-},(err)=>{console.log(err)});
-
+const mongoConnection=require('./util/mongoConnection');
+mongoConnection();
+const redisClient=require('./util/redisClient');
 
 require('./models/user')
 require('./models/movie')
@@ -16,6 +13,12 @@ require('./models/review')
 const app=express()
 app.use(express.json())
 app.use(cors());
+
+const NODE_ENV=process.env.NODE_ENV;
+if(NODE_ENV==="development"){
+    app.use(logger('dev'));
+}
+
 app.use('/api/auth',require('./routes/auth'))
 app.use('/api/movies',require('./routes/movies'))
 app.use('/api/reviews',require('./routes/reviews'))

@@ -8,7 +8,7 @@ const reviewSchema = new mongoose.Schema({
 	},
     refMovieId:{
         type:ObjectId,
-        ref:"movies_data"
+        ref:"Movies_data"
     },
     movieId:{
         type:Number,
@@ -26,4 +26,4 @@ const reviewSchema = new mongoose.Schema({
         type:String
     }
 })
-mongoose.model("reviews",reviewSchema)
+mongoose.model("Reviews",reviewSchema)

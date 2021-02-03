@@ -1,74 +1,40 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const sanitize = require('mongo-sanitize');
+const requireLogin = require('../util/requireLogin')
+
+const User = mongoose.model("User")
+const Reviews =  mongoose.model("Reviews")
+const Movies_data =  mongoose.model("Movies_data")
 
 const router = express.Router()
-const User = mongoose.model("User")
-const movies_data =  mongoose.model("movies_data")
-const reviews =  mongoose.model("reviews")
-const requireLogin = require('../middleware/requireLogin')
 
-router.get('/',(req,res)=>{
-    movies_data.find()
-    .then((movies)=>{
-        //console.log("Enteredss")
-        res.json(movies)
-    }).catch(err=>{
-        console.log(err)
-    })
-    
-})
 
-router.get('/:movieId',(req,res)=>{
-    movies_data.findById(req.params.movieId)
-    .then((movie)=>{
-        res.json(movie)
-    }).catch(err=>{
-        console.log(err)
-    })
-})
-
-router.get('/mypost',requireLogin,async (req,res)=>{
-    // User.findById(req.body.userId)
-    // // .populate("reviews","_id movieId rating comment")
-    // // .populate("reviews.movieId","_id title")
-    // .then(result=>{
-        
-    //     var review_data=[]
-    //     for(var index=0;index<result.reviews.length;index++){
-    //         // reviews.findOne({_id:result.reviews[index]})
-    //         // .populate("movieId","_id title genres rating")
-    //         // .then((review)=>{
-    //         //     console.log("review"+review)
-    //         //     review_data.push(review)
-    //         // }).catch(err=>{
-    //         //     console.log(err)
-    //         // })
-    //         //review_data.push(await reviews.findOne({_id:result.reviews[index]}))
-    //     }
-    //     console.log(review_data)
-    //     //res.json({review_data})
-    //     res.json({result})
-    // })
-    // .catch(err=>{
-    //     console.log(err)
-    // })
-    
+// @route   Get api/movies
+// @desc    Get list of all movies
+// @access  Public
+router.get('/',async (req,res)=>{    
     try{
-        const reviews_data=(await User.findOne({_id:req.user._id}))
-        reviews_data.password=undefined
-        var movie_data=[]
-        for(var index=0;index<reviews_data.reviews.length;index++){
-            movie_data.push(await reviews.findOne({_id:reviews_data.reviews[index]})
-            .populate("refMovieId","movieId title genres poster imdb_link")
-            )
-        }
-        reviews_data.reviews=movie_data
-        res.json(reviews_data)
+        const movies= await Movies_data.find();
+        res.json(movies);
     }catch(err){
         console.log(err.message);
-		res.status(500).send('Server Error');
-    }
+        res.status(500).send('Server Error');
+    }    
+})
 
+// @route   Get api/movies/:movieId
+// @desc    Get details of a movie
+// @access  Public
+router.get('/:movieId',async (req,res)=>{
+    const movieId=sanitize(req.params.movieId);    
+    try{
+        const movie= await Movies_data.findById(movieId);
+        res.json(movie);
+    }catch(err){
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
 })
 
 module.exports=router

@@ -1,29 +1,36 @@
-const { response } = require('express');
-const express = require('express')
+const express = require('express');
 const mongoose = require('mongoose')
 const { v4: uuidV4 } = require('uuid');
+const sanitize = require('mongo-sanitize');
+const requireLogin = require('../util/requireLogin')
 
+
+const User = mongoose.model("User")
+const Reviews =  mongoose.model("Reviews")
+const Movies_data =  mongoose.model("Movies_data")
 
 const router = express.Router()
-const User = mongoose.model("User")
-const movies_data =  mongoose.model("movies_data")
-const reviews =  mongoose.model("reviews")
-const requireLogin = require('../middleware/requireLogin')
 
-router.get('/',(req,res)=>{
-    reviews.find()
-    //.populate("refMovieId","_id title genres rating")
-    .then((reviews)=>{
-        res.json(reviews)
-    }).catch(err=>{
-        console.log(err)
-    })
-    
+// @route   Get api/reviews
+// @desc    Get list of all reviews
+// @access  Public
+router.get('/',async (req,res)=>{
+    try{
+        const reviews =await Reviews.find();
+        res.json(reviews);
+    }catch(err){
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
+
 })
 
+// @route   Post api/reviews
+// @desc    Add new review
+// @access  Private: Only authorized user can access
 router.post('/',requireLogin,async(req,res)=>{
     const {movieId,userId,rating,comment,refMovieId}=req.body
-    const review = new reviews({
+    const review = new Reviews({
         movieId,
         userId,
         rating,
@@ -31,54 +38,32 @@ router.post('/',requireLogin,async(req,res)=>{
         refMovieId
     })
     review.rid = uuidV4()
-    review.save()
-    //.populate("refMovieId","movieId title genres poster imdb_link")
-    .then(result=>{
-        User.findByIdAndUpdate(userId,{
-            $push:{reviews:result._id}
-        },{new:true})
-        .then(async response=>{
-            res.json({newReview:result})
-            //console.log("User"+result)
-            // try{
-            //     const savedUser=(await User.findById(userId))
-            //     if(!savedUser){
-            //         //return res.status(422).json({error:"Invalid username or password"})
-            //     }
-            //     savedUser.password=undefined
-            //     var movie_data=[]
-            //     for(var index=0;index<savedUser.reviews.length;index++){
-            //         movie_data.push(await reviews.findOne({_id:savedUser.reviews[index]})
-            //         .populate("refMovieId","movieId title genres poster imdb_link")
-            //         )
-            //     }
-            //     savedUser.reviews=movie_data
-            //     res.json({user:savedUser})
-            // }catch(err){
-            //     console.log(err.message);
-            //     res.status(500).send('Server Error');
-            // }
-        })
-        .catch(err=>{
-            return res.status(422).json({error:err})
-        })
-    })
-    .catch(err=>{
-        return res.status(422).json({error:err})
-    })
+    try{
+
+        const new_review=await review.save();
+        const update_user=await User.findByIdAndUpdate(userId,{
+            $push:{reviews:review._id}
+        },{new:true});
+        res.json({newReview:new_review});
     
+    }catch(err){
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
 })
 
-router.get('/:userId',(req,res)=>{
-    //console.log("entered")
-    reviews.find({userId:req.params.userId})
-    .populate("refMovieId","movieId title genres poster imdb_link")
-    .then((reviews)=>{
-        res.json(reviews)
-    }).catch(err=>{
-        console.log(err)
-    })
-    
+// @route   Get api/reviews/:userId
+// @desc    Get all reviews of a user
+// @access  Public
+router.get('/:userId',async (req,res)=>{
+    try{
+        const userId=sanitize(req.params.userId);
+        const reviews=await Reviews.find({userId:userId}).populate("refMovieId","movieId title genres poster imdb_link")
+        res.json(reviews);
+    }catch(err){
+        console.log(err);
+        res.status(500).send("Server Error");
+    }
 })
 
 module.exports=router
