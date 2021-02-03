@@ -6,8 +6,8 @@ const {JWT_SECRET}=require('../config/key')
 const router = express.Router()
 
 const User = mongoose.model("User")
-const movies_data =  mongoose.model("movies_data")
-const reviews =  mongoose.model("reviews")
+const Movies_data =  mongoose.model("Movies_data")
+const Reviews =  mongoose.model("Reviews")
 
 router.post('/signup',async(req,res)=>{
     //console.log("signin entered",req.body)
@@ -116,7 +116,7 @@ router.post('/signin',async(req,res)=>{
         savedUser.password=undefined
         var movie_data=[]
         for(var index=0;index<savedUser.reviews.length;index++){
-            movie_data.push(await reviews.findOne({_id:savedUser.reviews[index]})
+            movie_data.push(await Reviews.findOne({_id:savedUser.reviews[index]})
             .populate("refMovieId","movieId title genres poster imdb_link")
             )
         }

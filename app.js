@@ -1,12 +1,8 @@
 const express = require('express')
-const mongoose = require('mongoose')
 const cors = require('cors');
 
-const {mongourl}=require('./config/key');
-var connect=mongoose.connect(mongourl);
-connect.then((db) =>{
-  console.log('Connected correctly to mongodb');
-},(err)=>{console.log(err)});
+const mongoConnection=require('./util/mongoConnection');
+mongoConnection();
 
 
 require('./models/user')
@@ -16,6 +12,7 @@ require('./models/review')
 const app=express()
 app.use(express.json())
 app.use(cors());
+
 app.use('/api/auth',require('./routes/auth'))
 app.use('/api/movies',require('./routes/movies'))
 app.use('/api/reviews',require('./routes/reviews'))
