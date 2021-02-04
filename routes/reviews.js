@@ -3,7 +3,7 @@ const mongoose = require('mongoose')
 const { v4: uuidV4 } = require('uuid');
 const sanitize = require('mongo-sanitize');
 const requireLogin = require('../util/requireLogin')
-
+const redisClient=require('../util/redisClient');
 
 const User = mongoose.model("User")
 const Reviews =  mongoose.model("Reviews")
@@ -14,10 +14,23 @@ const router = express.Router()
 // @route   Get api/reviews
 // @desc    Get list of all reviews
 // @access  Public
-router.get('/',async (req,res)=>{
+router.get('/',(req,res)=>{
     try{
-        const reviews =await Reviews.find();
-        res.json(reviews);
+        redisClient.get("reviews",async (err,data)=>{
+            if(err){
+                console.log(err);
+                res.status(500).send("Server Error");
+            }
+            if(data!=null){
+                res.send(data);
+            }
+            else{
+                const reviews =await Reviews.find();
+                redisClient.setex("reviews",3600,JSON.stringify(reviews));
+                res.json(reviews);
+            }            
+        })
+        
     }catch(err){
         console.log(err);
         res.status(500).send("Server Error");
