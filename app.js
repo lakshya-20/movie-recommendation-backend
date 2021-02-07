@@ -4,7 +4,7 @@ const logger = require('morgan');
 
 const mongoConnection=require('./util/mongoConnection');
 mongoConnection();
-const redisClient=require('./util/redisClient');
+//const redisClient=require('./util/redisClient');
 
 require('./models/user')
 require('./models/movie')

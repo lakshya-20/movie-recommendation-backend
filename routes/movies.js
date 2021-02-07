@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const sanitize = require('mongo-sanitize');
 const requireLogin = require('../util/requireLogin')
+const redisClient=require('../util/redisClient');
 
 const User = mongoose.model("User")
 const Reviews =  mongoose.model("Reviews")
@@ -13,15 +14,28 @@ const router = express.Router()
 // @route   Get api/movies
 // @desc    Get list of all movies
 // @access  Public
-router.get('/',async (req,res)=>{    
+router.get('/',(req,res)=>{    
     try{
-        const movies= await Movies_data.find();
-        res.json(movies);
+        redisClient.get("movies",async (err,data)=>{
+            if(err){
+                console.log(err);
+                res.status(500).send("Server Error");
+            }
+            if(data!=null){
+                res.send(data);
+            }
+            else{
+                const movies= await Movies_data.find();
+                redisClient.setex("movies",3600,JSON.stringify(movies));
+                res.json(movies);
+            }            
+        })
     }catch(err){
         console.log(err.message);
         res.status(500).send('Server Error');
     }    
 })
+
 
 // @route   Get api/movies/:movieId
 // @desc    Get details of a movie
