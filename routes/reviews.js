@@ -2,8 +2,9 @@ const express = require('express');
 const mongoose = require('mongoose')
 const { v4: uuidV4 } = require('uuid');
 const sanitize = require('mongo-sanitize');
-const requireLogin = require('../util/requireLogin')
+const requireLogin = require('../util/requireLogin');
 const redisClient=require('../util/redisClient');
+const logger=require('../util/winstonLogger');
 
 const User = mongoose.model("User")
 const Reviews =  mongoose.model("Reviews")
@@ -18,7 +19,7 @@ router.get('/',(req,res)=>{
     try{
         redisClient.get("reviews",async (err,data)=>{
             if(err){
-                console.log(err);
+                logger.error(err);
                 res.status(500).send("Server Error");
             }
             if(data!=null){
@@ -32,7 +33,7 @@ router.get('/',(req,res)=>{
         })
         
     }catch(err){
-        console.log(err);
+        logger.error(err);
         res.status(500).send("Server Error");
     }
 
@@ -57,10 +58,11 @@ router.post('/',requireLogin,async(req,res)=>{
         const update_user=await User.findByIdAndUpdate(userId,{
             $push:{reviews:review._id}
         },{new:true});
+        logger.info("New Review",{userId: `${userId}`},{movieId: `${movieId}`},{rating: `${rating}`});
         res.json({newReview:new_review});
     
     }catch(err){
-        console.log(err);
+        logger.error(err);
         res.status(500).send("Server Error");
     }
 })
@@ -74,7 +76,7 @@ router.get('/:userId',async (req,res)=>{
         const reviews=await Reviews.find({userId:userId}).populate("refMovieId","movieId title genres poster imdb_link")
         res.json(reviews);
     }catch(err){
-        console.log(err);
+        logger.error(err);
         res.status(500).send("Server Error");
     }
 })

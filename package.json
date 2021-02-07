@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/lakshya-20/flick-backend#readme",
   "dependencies": {
+    "app-root-path": "^3.0.0",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "express": "^4.17.1",
@@ -27,6 +28,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^2.0.6",
     "redis": "^3.0.2",
-    "uuid": "^8.3.1"
+    "uuid": "^8.3.1",
+    "winston": "^3.3.3"
   }
 }

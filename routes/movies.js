@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const sanitize = require('mongo-sanitize');
 const requireLogin = require('../util/requireLogin')
 const redisClient=require('../util/redisClient');
+const logger=require('../util/winstonLogger');
 
 const User = mongoose.model("User")
 const Reviews =  mongoose.model("Reviews")
@@ -18,10 +19,10 @@ router.get('/',(req,res)=>{
     try{
         redisClient.get("movies",async (err,data)=>{
             if(err){
-                console.log(err);
+                logger.error(err);
                 res.status(500).send("Server Error");
             }
-            if(data!=null){
+            if(data!=null){                       
                 res.send(data);
             }
             else{
@@ -31,7 +32,7 @@ router.get('/',(req,res)=>{
             }            
         })
     }catch(err){
-        console.log(err.message);
+        logger.error(err);
         res.status(500).send('Server Error');
     }    
 })
@@ -46,7 +47,7 @@ router.get('/:movieId',async (req,res)=>{
         const movie= await Movies_data.findById(movieId);
         res.json(movie);
     }catch(err){
-        console.log(err);
+        logger.error(err);
         res.status(500).send("Server Error");
     }
 })
