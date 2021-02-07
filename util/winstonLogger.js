@@ -35,7 +35,7 @@ var logger = new winston.createLogger({
     new winston.transports.File(options.file),    
   ],
   // exceptionHandlers: [
-  //   new winston.transports.File({ filename: `${appRoot}/exceptions.log` })
+  //   new winston.transports.File({ filename: `${appRoot}/logs/exceptions.log` })
   // ],
   exitOnError: false,
 });

@@ -19,7 +19,7 @@ router.get('/',(req,res)=>{
     try{
         redisClient.get("reviews",async (err,data)=>{
             if(err){
-                logger.error(err);
+                logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
                 res.status(500).send("Server Error");
             }
             if(data!=null){
@@ -33,7 +33,7 @@ router.get('/',(req,res)=>{
         })
         
     }catch(err){
-        logger.error(err);
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send("Server Error");
     }
 
@@ -62,7 +62,7 @@ router.post('/',requireLogin,async(req,res)=>{
         res.json({newReview:new_review});
     
     }catch(err){
-        logger.error(err);
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send("Server Error");
     }
 })
@@ -76,7 +76,7 @@ router.get('/:userId',async (req,res)=>{
         const reviews=await Reviews.find({userId:userId}).populate("refMovieId","movieId title genres poster imdb_link")
         res.json(reviews);
     }catch(err){
-        logger.error(err);
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send("Server Error");
     }
 })

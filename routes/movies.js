@@ -32,7 +32,7 @@ router.get('/',(req,res)=>{
             }            
         })
     }catch(err){
-        logger.error(err);
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send('Server Error');
     }    
 })
@@ -47,7 +47,7 @@ router.get('/:movieId',async (req,res)=>{
         const movie= await Movies_data.findById(movieId);
         res.json(movie);
     }catch(err){
-        logger.error(err);
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send("Server Error");
     }
 })
