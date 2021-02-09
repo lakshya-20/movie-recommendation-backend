@@ -19,10 +19,10 @@ router.get('/',(req,res)=>{
     try{
         redisClient.get("movies",async (err,data)=>{
             if(err){
-                logger.error(err);
+                logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
                 res.status(500).send("Server Error");
             }
-            if(data!=null){                       
+            if(data!=null){                                
                 res.send(data);
             }
             else{
