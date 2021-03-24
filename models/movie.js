@@ -17,4 +17,4 @@ const movieSchema = new mongoose.Schema({
         required:true
     }
 })
-mongoose.model("Movies_data",movieSchema)
+exports.Movies_data=mongoose.model("Movies_data",movieSchema)

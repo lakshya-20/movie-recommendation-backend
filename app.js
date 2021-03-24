@@ -7,9 +7,6 @@ const logger = require('./util/winstonLogger');
 const mongoConnection=require('./util/mongoConnection');
 mongoConnection();
 
-require('./models/user')
-require('./models/movie')
-require('./models/review')
 
 const app=express()
 app.use(express.json())
