@@ -3,10 +3,9 @@ const mongoose = require('mongoose')
 const sanitize = require('mongo-sanitize');
 const requireLogin = require('../util/requireLogin')
 const redisClient=require('../util/redisClient');
-
-const User = mongoose.model("User")
-const Reviews =  mongoose.model("Reviews")
-const Movies_data =  mongoose.model("Movies_data")
+const logger=require('../util/winstonLogger');
+ 
+const {Movies_data} =  require('../models/movie');
 
 const router = express.Router()
 
@@ -16,22 +15,24 @@ const router = express.Router()
 // @access  Public
 router.get('/',(req,res)=>{    
     try{
+        
         redisClient.get("movies",async (err,data)=>{
+            
             if(err){
-                console.log(err);
+                logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
                 res.status(500).send("Server Error");
             }
-            if(data!=null){
+            if(data!=null){                                                
                 res.send(data);
             }
-            else{
+            else{                
                 const movies= await Movies_data.find();
                 redisClient.setex("movies",3600,JSON.stringify(movies));
                 res.json(movies);
             }            
         })
     }catch(err){
-        console.log(err.message);
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send('Server Error');
     }    
 })
@@ -40,13 +41,14 @@ router.get('/',(req,res)=>{
 // @route   Get api/movies/:movieId
 // @desc    Get details of a movie
 // @access  Public
-router.get('/:movieId',async (req,res)=>{
-    const movieId=sanitize(req.params.movieId);    
+router.get('/:movieId',async (req,res)=>{    
+    var movieId=sanitize(req.params.movieId);    
     try{
+        movieId=mongoose.Types.ObjectId(movieId);
         const movie= await Movies_data.findById(movieId);
         res.json(movie);
     }catch(err){
-        console.log(err);
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send("Server Error");
     }
 })

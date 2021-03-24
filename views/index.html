@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Flick Backend</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">    
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>    
+  </head>
+  <div class="jumbotron text-center">
+    <h1>Flick Backend</h1>
+    <p>A movie recommendation system.</p> 
+  </div>
+  <body >    
+    <div class="container">
+      <div class="row">
+        <div class="col-12 col-sm-6">                     
+          {{#detail}}
+            <div class="card">                        
+              <div class="card-body">
+                
+                <h4 class="card-title">Route: {{name}}</h4>                            
+                <p class="card-text">
+                  <span class="float-right badge badge-info">{{method}}</span> {{detail}}
+                </p>
+                <button id="api_button" class="btn btn-primary" onclick="myFunction({{id}})">Detail</button>
+              </div>
+            </div>
+            <br>            
+          {{/detail}}
+
+        </div>
+        <div class="col-12 col-sm-6">
+          <div class="border">
+            <div class="col-12">
+              <div class="row">
+                <h2>Input</h2>
+                <p id="input">{"message":"Select an api to view details"}</p>
+              </div>
+              <div class="row">
+                <h2>Output</h2>
+                <p id="output">{"message":"Select an api to view details"}</p>
+              </div>
+            </div>
+          </div>          
+        </div>
+      </div>
+    </div>
+
+
+  </body>
+
+  <script >
+    var data = [
+      one={
+        input:{
+
+        },
+        output:[
+          {
+            "_id": "5fe1dea0be22c590f0ed4079",
+            "movieId": 114709,
+            "imdb_link": "http://www.imdb.com/title/tt114709",
+            "poster": "poster_url",
+            "title": "Toy Story (1995)",
+            "imdb_score": 8.3,
+            "genres": "Animation|Adventure|Comedy"
+          },
+          {
+            "_id": "5fe1dea0be22c590f0ed407a",
+            "movieId": 113497,
+            "imdb_link": "http://www.imdb.com/title/tt113497",
+            "poster": "poster_url",
+            "title": "Jumanji (1995)",
+            "imdb_score": 6.9,
+            "genres": "Action|Adventure|Family"
+          },
+        ]
+      },
+      two={
+        input:{
+          "movieId":"5fe1dea0be22c590f0ed4079"
+        },
+        output:{
+            "_id": "5fe1dea0be22c590f0ed4079",
+            "movieId": 114709,
+            "imdb_link": "http://www.imdb.com/title/tt114709",
+            "poster": "poster_url",
+            "title": "Toy Story (1995)",
+            "imdb_score": 8.3,
+            "genres": "Animation|Adventure|Comedy"
+        }
+      },
+      three={
+        input:{
+
+        },
+        output:[
+          {
+            "_id": "5fe1df6d738bf28ac7d7f735",
+            "movieId": 114709,
+            "userId": "5fe1df5b738bf28ac7d7f734",
+            "rating": 5,
+            "comment": "Nice movie",
+            "refMovieId": "5fe1dea0be22c590f0ed4079",
+            "rid": "d16eaf78-7838-4b70-853e-fef710dd5e2a",
+            "__v": 0
+          },
+          {
+            "_id": "5fe1df78738bf28ac7d7f736",
+            "movieId": 113497,
+            "userId": "5fe1df5b738bf28ac7d7f734",
+            "rating": 10,
+            "comment": "Nice movie",
+            "refMovieId": "5fe1dea0be22c590f0ed407a",
+            "rid": "f5af7dcf-a670-48a4-ba6b-8c10b52ca731",
+            "__v": 0
+          },
+        ]
+      },
+      four={
+        input:{
+          "refMovieId":"5f8b5e31e2ee0b535aba067e",
+          "movieId":3263614,
+          "userId":"5f8b677dea92f225849631f0",
+          "rating":"1",
+          "comment":"nice movie"
+        },
+        output:{
+          "_id" : "601b168ca0cb24bbc175cbc1",
+          "movieId" : 71206,
+          "userId" : "601b0cece8c794af98abd4a2",
+          "rating" : 8,
+          "comment" : "Nice movie",
+          "refMovieId" : "5fe1dea1be22c590f0ed4e59",
+          "rid" : "9108d0c2-7d4b-41b2-bce4-d2ce659b4d00",
+        }
+      },
+      five={
+        input:{
+
+        },
+        output:[
+          {
+            "_id": "601b0dcc5184a8b1f7a394a5",
+            "movieId": 114709,
+            "userId": "601b0cece8c794af98abd4a2",
+            "rating": 2,
+            "comment": "Nice movie",
+            "refMovieId": {
+                "_id": "5fe1dea0be22c590f0ed4079",
+                "movieId": 114709,
+                "imdb_link": "http://www.imdb.com/title/tt114709",
+                "poster": "poster_url",
+                "title": "Toy Story (1995)",
+                "genres": "Animation|Adventure|Comedy"
+            },
+            "rid": "4a90e574-cd4e-4bf3-93b7-cd0e162d41eb",
+            "__v": 0
+            },
+          {
+            "_id": "601b0f97bc319db4c2bea07b",
+            "movieId": 113497,
+            "userId": "601b0cece8c794af98abd4a2",
+            "rating": 7,
+            "comment": "fsdgsfd",
+            "refMovieId": {
+                "_id": "5fe1dea0be22c590f0ed407a",
+                "movieId": 113497,
+                "imdb_link": "http://www.imdb.com/title/tt113497",
+                "poster": "poster_url",
+                "title": "Jumanji (1995)",
+                "genres": "Action|Adventure|Family"
+            },
+            "rid": "3e01ff16-9205-4ccd-ba64-feea94df72ed",
+            "__v": 0
+          },
+      ]
+      }
+    ]
+    function myFunction(id) {      
+      document.getElementById("input").innerHTML = JSON.stringify(data[id].input);
+      document.getElementById("output").innerHTML = JSON.stringify(data[id].output);
+    }
+
+  </script>
+
+</html>
