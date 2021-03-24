@@ -10,7 +10,7 @@ module.exports=async ()=>{
 			useCreateIndex: true,
 			useFindAndModify: false
         });        
-        logger.info("Mongodb Connected...");
+        logger.info(`Mongodb Connected to ${mongourl}...`);
     }catch(err){
         logger.error(err);
         process.exit(1);

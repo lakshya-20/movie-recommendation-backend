@@ -42,6 +42,7 @@ router.post('/signup',async(req,res)=>{
         }
         user.reviews=movie_data
         const token=jwt.sign({_id:user._id},JWT_SECRET)
+        console.log("Entreres")
         res.json({token,user:user})
 
     }catch(err){
