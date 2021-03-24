@@ -3,6 +3,9 @@ const cors = require('cors');
 var path = require('path');
 var mustacheExpress = require('mustache-express');  
 
+const dotenv = require('dotenv')
+dotenv.config();
+
 const logger = require('./util/winstonLogger');
 const mongoConnection=require('./util/mongoConnection');
 mongoConnection();
@@ -35,6 +38,8 @@ app.use('/api/movies',require('./routes/movies'))
 app.use('/api/reviews',require('./routes/reviews'))
 
 const PORT=process.env.PORT ||5000
-app.listen(PORT,()=>{    
+const server = app.listen(PORT,()=>{    
     logger.info(`Server starting on port no: ${PORT}`)
 })
+
+module.exports = server;
