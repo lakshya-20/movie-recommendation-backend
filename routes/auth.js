@@ -75,6 +75,12 @@ router.post('/signin',async(req,res)=>{
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
+        const isMatch = await bcrypt.compare(password, savedUser.password);
+
+		if (!isMatch) {
+			return res.status(400).json({ msg: 'Invalid Credentials' });
+		}
+
         savedUser.password=undefined
         var movie_data=[]
         for(var index=0;index<savedUser.reviews.length;index++){
