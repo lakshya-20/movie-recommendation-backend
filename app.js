@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 var path = require('path');
+var passport = require('passport');
 var mustacheExpress = require('mustache-express');  
 
 const dotenv = require('dotenv')
@@ -14,7 +15,7 @@ mongoConnection();
 const app=express()
 app.use(express.json())
 app.use(cors());
-
+app.use(passport.initialize())
 
 app.engine('html', mustacheExpress()); 
 app.set('view engine', 'html'); 
