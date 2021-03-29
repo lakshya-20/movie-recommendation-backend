@@ -70,8 +70,10 @@ router.post('/signin',async(req,res)=>{
         }
         if(!savedUser.password){
             if(savedUser.provider==="google"){
+                logger.info("This email address is already being used with a Google account")
                 return res.status(400).json({ msg: 'Try logging with google account.' });    
             }
+            logger.info("Invalid credentials");
             return res.status(400).json({ msg: 'Invalid Credentials' });
         }
 
@@ -100,7 +102,8 @@ router.post('/signin',async(req,res)=>{
 
 router.get('/google', passport.authenticate('google',{scope:['profile','email']}));
 
-router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/signin'}), async (req,res) =>{
+router.get('/google/callback', passport.authenticate('google', { failureRedirect: '/signin',session:false}), async (req,res) =>{
+    //console.log("Redirect url called");
     let user = {        
         name: req.user._json.name,
         email: req.user._json.email,
@@ -116,12 +119,25 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
     }
 
     const token=jwt.sign({_id:savedUser._id},JWT_SECRET)
-    res.send(token);
+    res.redirect("http://localhost:3000/?token="+token);
 })
 
+router.post('/oauth/util',async (req,res)=>{
+    try{
+        const {authorization} = req.headers
+        const token = authorization
+        if(!token){
+            return res.status(401).json({error:"Access denied. No token provided."})    
+        }
+        const decoded = jwt.verify(token, JWT_SECRET);
+        const user = await User.findById(decoded._id);
+        res.json({token,user:user})
+    }catch(err){
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+		res.status(500).send('Server Error');
+    }
 
-
-
-
+    
+})
 
 module.exports = router
