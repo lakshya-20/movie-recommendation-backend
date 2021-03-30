@@ -30,7 +30,12 @@ app.get('/',(req,res)=>{
             {name:"api/movies/:movieId",detail:"Get details of a movie",method:"GET",id:"1"},
             {name:"api/reviews",detail:"Get list of all movies",method:"GET",id:"2"},
             {name:"api/reviews",detail:"Post new review",method:"POST",id:"3"},
-            {name:"api/reviews/:userId",detail:"Get all reviews of a user",method:"Get",id:"4"},
+            {name:"api/reviews/:userId",detail:"Get all reviews of a user",method:"GET",id:"4"},
+            {name:"api/auth/signup",detail:"Register new user",method:"POST",id:"5"},
+            {name:"api/auth/signin",detail:"Logiin an existing user",method:"POST",id:"6"},
+            {name:"api/auth/google",detail:"Google OAuth handler",method:"GET",id:"7"},
+            {name:"api/auth/google/callback",detail:"Google OAuth callback route",method:"GET",id:"8"},
+            {name:"api/auth/oauth/util",detail:"Accepts token and return the user details",method:"POST",id:"9"}
         ]        
     });
 })
