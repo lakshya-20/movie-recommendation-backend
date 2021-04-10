@@ -3,7 +3,6 @@ const mongoose = require('mongoose')
 const { v4: uuidV4 } = require('uuid');
 const sanitize = require('mongo-sanitize');
 const requireLogin = require('../util/requireLogin');
-const redisClient=require('../util/redisClient');
 const logger=require('../util/winstonLogger');
 
 const {User} = require('../models/user');

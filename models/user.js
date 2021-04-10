@@ -15,15 +15,17 @@ const userSchema = new mongoose.Schema({
     },
     password:{
         type:String,
-        required:true
     },
     gender:{
         type:String,
-        required:true
     },
     photo:{
         type:String,
         default:"https://drive.google.com/uc?id=1a6RhWRlSfZ8sLpyJydE8RCIDjkHsLlDy"
+    },
+    provider:{
+        type:String,
+        default:"user"
     },
     reviews:[{
         type:ObjectId,
