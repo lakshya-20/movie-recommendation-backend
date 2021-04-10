@@ -32,13 +32,17 @@ var options = {
 
 var logger = new winston.createLogger({
   transports: [
-    new winston.transports.File(options.file),    
+    
   ],
   // exceptionHandlers: [
   //   new winston.transports.File({ filename: `${appRoot}/logs/exceptions.log` })
   // ],
   exitOnError: false,
 });
+
+if(process.env.HAS_LOCAL_STORAGE === 'TRUE'){
+  logger.add(new winston.transports.File(options.file));
+}
 
 if(process.env.NODE_ENV !== 'production'){
   logger.add(new winston.transports.Console(options.console));
