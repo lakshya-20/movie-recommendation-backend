@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const {mongourl}= require('../config/key');
+var {mongourl}= require('../config/key');
 const logger= require('./winstonLogger');
 
 module.exports=async ()=>{
