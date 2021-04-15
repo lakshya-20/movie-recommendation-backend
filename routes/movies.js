@@ -14,7 +14,6 @@ const router = express.Router()
 // @desc    Get list of all movies
 // @access  Public
 router.get('/',async(req,res)=>{    
-    
     try{
         
         // redisClient.get("movies",async (err,data)=>{
@@ -40,6 +39,18 @@ router.get('/',async(req,res)=>{
     }    
 })
 
+// @route   Get api/movies/recommendation
+// @desc    Get list of 10 movies (dumnmy recommendations)
+// @access  Public
+router.get('/recommendations',async(req,res)=>{    
+    try{        
+        const movies= await Movies_data.find().limit(10);
+        res.json(movies);
+    }catch(err){
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        res.status(500).send('Server Error');
+    }    
+})
 
 // @route   Get api/movies/:movieId
 // @desc    Get details of a movie
@@ -55,5 +66,7 @@ router.get('/:movieId',async (req,res)=>{
         res.status(500).send("Server Error");
     }
 })
+
+
 
 module.exports=router
