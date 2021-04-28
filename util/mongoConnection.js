@@ -12,7 +12,7 @@ module.exports=async ()=>{
         });        
         logger.info(`Mongodb Connected to ${mongourl}...`);
     }catch(err){
-        logger.error(err);
+        logger.error(""+err);
         process.exit(1);
     }
 }

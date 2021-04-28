@@ -11,7 +11,7 @@ client.on("connect",()=>{
 })
 
 client.on("error",(err)=>{
-    logger.error(err);
+    logger.error(""+err);
 })
 
 module.exports=client;
