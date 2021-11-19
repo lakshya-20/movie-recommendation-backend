@@ -64,4 +64,18 @@ router.get('/:movieId',async (req,res)=>{
         res.status(500).send("Server Error");
     }
 })
+
+// @route   Get api/movies/find/:title
+// @desc    Find movie by title
+// @access  Public
+router.get('/find/:title', async (req,res) => {
+    const title = sanitize(req.params.title);
+    try{
+        const movie= await Movies_data.find({title: { $regex: `^${title}.*$`, $options: 'i' }}).limit(10);
+        res.json(movie);
+    } catch(err){
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        res.status(500).send("Server Error");
+    }
+})
 module.exports=router
