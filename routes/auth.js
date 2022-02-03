@@ -4,7 +4,6 @@ const bcrypt = require('bcryptjs')
 const jwt= require('jsonwebtoken');
 var passport = require('passport');
 
-const {JWT_SECRET,FRONTEND_URL}=require('../config/key')
 const router = express.Router()
 const logger = require('../util/winstonLogger')
 
@@ -48,7 +47,7 @@ router.post('/signup',async(req,res)=>{
             )
         }
         user.reviews=movie_data
-        const token=jwt.sign({_id:user._id},JWT_SECRET)
+        const token=jwt.sign({_id:user._id},process.env.JWT_SECRET)
         res.json({token,user:user})
 
     }catch(err){
@@ -119,7 +118,7 @@ router.get('/google/callback', passport.authenticate('google', { failureRedirect
     }
 
     const token=jwt.sign({_id:savedUser._id},JWT_SECRET)
-    res.redirect(`${FRONTEND_URL}/?token=`+token);
+    res.redirect(`${process.env.FRONTEND_URL}/?token=`+token);
 })
 
 router.post('/oauth/util',async (req,res)=>{

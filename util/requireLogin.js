@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken')
-const {JWT_SECRET} = require('../config/key')
 const mongoose = require('mongoose')
 const User = mongoose.model("User")
 module.exports = async (req,res,next)=>{
@@ -9,7 +8,7 @@ module.exports = async (req,res,next)=>{
         return res.status(401).json({error:"Access denied. No token provided."})    
     }
     try{
-        const decoded = jwt.verify(token, JWT_SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user = await User.findById(decoded._id);
         req.user=user;
         next();
