@@ -93,6 +93,7 @@ Here's why:
     JWT_SECRET=JWT_SECRET,
     FRONTEND_URL=http://localhost:3000/
     PORT=5000
+    REDIS_URL=redis://@redis:6379
     GOOGLECALLBACKURL=<value>
     GOOGLECLIENTID=<value>
     GOOGLECLIENTSEARCH=<value>
