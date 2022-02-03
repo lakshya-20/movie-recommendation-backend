@@ -3,7 +3,7 @@ const logger= require('./winstonLogger');
 
 module.exports=async ()=>{
     try{
-        await mongoose.connect(process.env.MONGOURL,{
+        await mongoose.connect(`${process.env.MONGOURL}/flick?authSource=admin`,{
             useUnifiedTopology: true,
 			useNewUrlParser: true,
 			useCreateIndex: true,
