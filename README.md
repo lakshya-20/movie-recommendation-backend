@@ -1,8 +1,5 @@
 <br />
-<p align="center">
-  <a href="https://github.com/lakshya-20/flick-backend">
-    <img src="util/assets/images/logo.png" alt="Logo" width="60" height="60">
-  </a>
+<p align="center">  
 
   <h3 align="center">Flick Movie Recommendation System</h3>
 
@@ -48,10 +45,6 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-<a href="https://github.com/lakshya-20/flick-frontend">
-    <img src="util/assets/images/demo1.PNG" alt="demo">
-</a>
 
 The aim of this project is to build a web based application that will recommend movies to users that they might want to watch.
 <br>
