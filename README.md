@@ -1,20 +1,19 @@
 <br />
-<p align="center">
-  <a href="https://github.com/lakshya-20/flick-backend">
-    <img src="util/assets/images/logo.png" alt="Logo" width="60" height="60">
-  </a>
+<p align="center">  
 
   <h3 align="center">Flick Movie Recommendation System</h3>
 
   <p align="center">
-    This is the backend repository for Flick Movie Recommendation which is a content-boosted recommendation system that provides users with movie recommendations based on their past interaction with the system.
+    This is the backend repository for Flick Movie Recommendation which is a content based recommendation system that provides users with movie recommendations based on their past interaction with the system.
     <br />
     <br />
-    <a href="https://flick--backend.herokuapp.com/">View Demo</a>
+    <a href="https://flick--backend.herokuapp.com/">View Live</a>
     ·
     <a href="https://github.com/lakshya-20/flick-backend/issues">Report Bug</a>
     ·
     <a href="https://github.com/lakshya-20/flick-backend/issues">Request Feature</a>
+    .
+    <a href="https://github.com/lakshya-20/flick-frontend">Frontend Repository</a>
   </p>
 </p>
 
@@ -49,10 +48,6 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-<a href="https://github.com/lakshya-20/flick-frontend">
-    <img src="util/assets/images/demo1.PNG" alt="demo">
-</a>
-
 The aim of this project is to build a web based application that will recommend movies to users that they might want to watch.
 <br>
 For this a content-boosted recommendation system is implemented that make use of ratings as well as comments to weight the recommendations. 
@@ -70,6 +65,10 @@ Here's why:
 * [Mongoose](https://mongoosejs.com/)
 * [Winston](https://www.npmjs.com/package/winston)
 * [Pasport.js](http://www.passportjs.org/)
+* [Python](https://www.python.org/)
+* [Flask](https://flask.palletsprojects.com/en/2.0.x/)
+* [Pandas](https://pandas.pydata.org/)
+
 
 
 
@@ -78,41 +77,40 @@ Here's why:
 
 ### Prerequisites
 
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+* [Docker](https://www.docker.com/)
+* [Docker-compose](https://docs.docker.com/compose/)
+* ~4 GB Free Main Memory
 
 ### Installation
 
 1. Clone the repo
-   ```sh
-   git clone https://github.com/<your_username>/flick-backend.git
-   ```
-2. Install NPM packages
-   ```sh
-   npm install
-   ```
-3. Modify `config/dev.js`
-   ```JS
-    module.exports={
-        mongourl:"<mongodb-url>",
-        JWT_SECRET:"<your-secret>",
-        FRONTEND_URL:"<frontend-client-url>"
-    }
-   ```
-   [Frontend Repository](https://github.com/lakshya-20/flick-frontend) 
-   [Recommendation System Repository](https://github.com/lakshya-20/flick)
-   
+  ```sh
+    git clone https://github.com/lakshya_20/flick-backend.git
+  ```
+2. Create `.env` file with following entries
+  ```
+    MONGOURL=mongodb://admin:password@mongodb:27017
+    JWT_SECRET=JWT_SECRET,
+    FRONTEND_URL=http://localhost:3000/
+    PORT=5000
+    REDIS_URL=redis://@redis:6379
+    GOOGLECALLBACKURL=<value>
+    GOOGLECLIENTID=<value>
+    GOOGLECLIENTSEARCH=<value>
+  ```
+3. Build the docker image
+  ```sh
+    docker-compose build
+  ```
+4. Run the application
+  ```sh
+    docker-compose up
+  ```
+  - Nodejs server will run at [http://localhost:5000](http://localhost:5000)
+  - Flask (recommendation_service) will run at [http://localhost:5001](http://localhost:5001)
 
-<!-- USAGE EXAMPLES -->
-## Usage
 
-In the project directory, you can run:
-```sh
-   npm start
-```
-Open [http://localhost:5000](http://localhost:5000) to view the server documentation.
+5. Open [http://localhost:5000](http://localhost:5000) to view the nodejs server documentation.
 
 > [Live Demo](https://flick--backend.herokuapp.com/)
 
@@ -144,7 +142,7 @@ Distributed under the GNU General Public License v3.0. See `LICENSE` for more in
 <!-- CONTACT -->
 ## Contact
 
-Lakshya Bansal - [lakshyabansal](https://www.linkedin.com/in/lakshyabansal/) 
+Lakshya Bansal - [lakshyabansal](https://www.linkedin.com/in/lakshyabansal/)
 
 Project Link: [https://github.com/lakshya-20/flick-backend](https://github.com/lakshya-20/flick-backend)
 

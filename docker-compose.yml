@@ -1,0 +1,63 @@
+version: "3.3"
+services:
+  flask_app:
+    container_name: flick_flask
+    build: ./recommendation_service
+    env_file: ./.env
+    ports:
+      - "5001:5001"
+    volumes:
+      - .:/recommendation_service
+    depends_on:
+      - mongodb
+
+  flick_backend:
+    container_name: flick_backend
+    build: ./backend_service
+    env_file: ./.env
+    ports:
+      - "5000:5000"    
+    depends_on:
+      - mongodb
+      - redis
+
+  mongodb:
+    container_name: flick_mongodb
+    image: mongo   
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - flick_mongodb:/data/db
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    container_name: flick_mongo-express
+    image: mongo-express    
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+      ME_CONFIG_MONGODB_ADMINPASSWORD: password
+      ME_CONFIG_MONGODB_SERVER: mongodb
+    ports:
+      - 8081:8081
+    depends_on:
+      - mongodb
+  
+  redis:
+    container_name: flick_redis
+    image: redis:6.2-alpine
+    restart: always
+    command: redis-server --save 20 1 --loglevel warning
+    volumes: 
+      - flick_redis:/data
+    ports:
+     - 6379:6379
+
+volumes:
+  flick_mongodb:
+    driver: local
+  flick_redis:
+    driver: local

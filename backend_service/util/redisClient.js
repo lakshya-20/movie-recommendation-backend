@@ -1,9 +1,8 @@
 const redis = require('redis');
 const logger = require('./winstonLogger');
 
-const port=process.env.REDIS_PORT||6379;
 const client = redis.createClient({
-    port: "6379"
+    url: process.env.REDIS_URL
 });
 
 client.on("connect",()=>{
