@@ -2,12 +2,13 @@ version: "3.3"
 services:
   flask_app:
     container_name: flick_flask
-    build: ./recommendation_service
+    build: 
+      context: ./recommendation_service
     env_file: ./.env
     ports:
       - "5001:5001"
     volumes:
-      - .:/recommendation_service
+      - ./recommendation_service:/recommendation_service
     depends_on:
       - mongodb
 
@@ -17,6 +18,8 @@ services:
     env_file: ./.env
     ports:
       - "5000:5000"    
+    volumes:
+      - ./backend_service:/backend_service
     depends_on:
       - mongodb
       - redis
@@ -56,8 +59,47 @@ services:
     ports:
      - 6379:6379
 
+  elasticsearch:
+    container_name: flick_elasticsearch
+    image: "elasticsearch:5.6"
+    environment:
+      - cluster.name=docker-cluster
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - TEST_CLUSTER_PORT=9250
+      - TEST_CLUSTER_NODES=1
+      - TEST_CLUSTER_NAME=my_cluster
+      - TEST_CLUSTER_TIMEOUT=120
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - "flick_esdata:/usr/share/elasticsearch/data:delegated"
+    ports:
+      - "9200:9200"      
+
+  kibana:
+    container_name: flick_kibana
+    image: docker.elastic.co/kibana/kibana:5.6.16
+    command:
+      [
+        "/bin/bash",
+        "-c",
+        "/usr/share/kibana/bin/kibana-plugin remove x-pack; /usr/local/bin/kibana-docker",
+      ]
+    environment:
+      SERVER_NAME: elastic
+      ELASTICSEARCH_URL: http://elasticsearch:9200/
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
 volumes:
   flick_mongodb:
     driver: local
   flick_redis:
+    driver: local
+  flick_esdata:
     driver: local

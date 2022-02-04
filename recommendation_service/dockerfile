@@ -1,5 +1,5 @@
 FROM python:3.7
-WORKDIR /recommendar_service
+WORKDIR /recommendation_service
 COPY requirements.txt requirements.txt
 RUN pip install -r requirements.txt
 COPY . .
