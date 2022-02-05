@@ -8,10 +8,11 @@ import os
 from bson import json_util
 from flask import Flask,request, url_for, redirect, render_template,jsonify,Response
 from flask_cors import CORS, cross_origin
+from elasticsearch import Elasticsearch
 
 myclient = pymongo.MongoClient(os.environ.get("MONGOURL"))
 mydb = myclient["flick"]
-
+es = Elasticsearch([{'host': 'elasticsearch', 'port': 9200}])
 app=Flask(__name__)
 cors = CORS(app)
 
@@ -19,11 +20,11 @@ cors = CORS(app)
 @app.route('/')
 @cross_origin()
 def hello_world():
-    return 'Hello World!'
+    return 'Hello World!'    
 
 @app.route('/initialize')
 @cross_origin()
-def initialize():
+def initialize():        
     mycol = mydb["genres_datas"]
     mycol.drop()
     genres_df=pd.read_csv('genres.csv')
@@ -38,13 +39,19 @@ def initialize():
     csvfile = open('movies.csv', 'r',encoding='utf-8')
     reader = csv.DictReader( csvfile )
     header=["movieId","imdb_link","poster","title","imdb_score","genres"]
+    es.indices.delete(index='flick', ignore=[400, 404])
+    es.indices.create(index='flick')
+    row = {}
     for each in reader:
-        row={}
+        mysql_row = {}
+        es_row = {}
         for field in header:
-            row[field]=each[field]
-        print("Inserting a movie"+str(mycol.count()))    
-        mycol.insert_one(row)
-    print("movies data synchronized "+str(mycol.count()))
+            mysql_row[field] = each[field]
+            es_row[field] = each[field]
+        print("Inserting a movie"+str(mycol.count()))            
+        mysql_row  = mycol.insert_one(mysql_row)               
+        es.index(index='flick', doc_type='movies', id=mysql_row.inserted_id, document=es_row)
+    print("movies data synchronized "+str(mycol.count()))    
     return "Initialized"
 
 @app.route('/newReview/<uid>')
