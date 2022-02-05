@@ -1,12 +1,10 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const sanitize = require('mongo-sanitize');
-const requireLogin = require('../util/requireLogin')
 const logger=require('../util/winstonLogger');
 const {Movies_data} =  require('../models/movie');
 const router = express.Router()
 const elastic_client = require('../util/elasticsearchClient');
-const { response } = require('express');
 
 // @route   Get api/movies
 // @desc    Get list of all movies
@@ -97,7 +95,7 @@ router.post("/search", async (req, res) => {
                             [key]: {
                                 query: search_param[key]["value"],
                                 fuzziness: "AUTO",
-                                prefix_length: 1
+                                prefix_length: 3
                             }
                         }
                     });
@@ -107,11 +105,19 @@ router.post("/search", async (req, res) => {
                 if(search_param[key]["present"] === true){
                     if(key === filter_key) continue;
                     else if (search_param[key]["type"] === "checkbox"){
-                        queries.push({
-                            match: {
-                                [key]: search_param[key]["value"]
-                            }
-                        });
+                        if (key === "genres"){
+                            queries.push({                                
+                                terms: { [`${key}.keyword`]: search_param[key]["values"] }
+                            });
+                        }
+                        else {
+                            queries.push({
+                                match: {
+                                    [key]: search_param[key]["value"]                                
+                                }
+                            })
+                        }
+                        
                     }
                     else if (search_param[key]["type"] === "range"){
                         queries.push({
@@ -158,6 +164,7 @@ router.post("/search", async (req, res) => {
         }
         return aggregations;
     }
+    console.log(JSON.stringify(getQueries(search_param, null, false)));
     const movies = await elastic_client.search({
         index: 'flick',
         body: {
@@ -178,8 +185,8 @@ router.post("/search", async (req, res) => {
         for( key in search_param){
             if (search_param[key]["type"] === "range"){
                 response["filter_params"][key+"_range"] = {
-                    min: body["aggregations"][`${key}_range`][`${key}_min`]["value"].toFixed(1),
-                    max: body["aggregations"][`${key}_range`][`${key}_max`]["value"].toFixed(1),
+                    min: body["aggregations"][`${key}_range`][`${key}_min`]["value"],
+                    max: body["aggregations"][`${key}_range`][`${key}_max`]["value"]
                 }
             }
             else if (search_param[key]["type"] === "checkbox") {
