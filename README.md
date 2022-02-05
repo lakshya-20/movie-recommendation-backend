@@ -7,6 +7,8 @@
     This is the backend repository for Flick Movie Recommendation which is a content based recommendation system that provides users with movie recommendations based on their past interaction with the system.
     <br />
     <br />
+    <a href = "https://documenter.getpostman.com/view/7376254/UVeGr6Kt"> API Documentation</a>
+    .
     <a href="https://flick--backend.herokuapp.com/">View Live</a>
     ·
     <a href="https://github.com/lakshya-20/flick-backend/issues">Report Bug</a>

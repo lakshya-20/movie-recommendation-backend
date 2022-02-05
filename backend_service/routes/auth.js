@@ -90,7 +90,7 @@ router.post('/signin',async(req,res)=>{
             )
         }
         savedUser.reviews=movie_data
-        const token=jwt.sign({_id:savedUser._id},JWT_SECRET)
+        const token=jwt.sign({_id:savedUser._id}, process.env.JWT_SECRET)
         res.json({token,user:savedUser})
     }catch(err){
         logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
