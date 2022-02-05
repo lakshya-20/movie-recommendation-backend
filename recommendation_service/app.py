@@ -21,6 +21,19 @@ cors = CORS(app)
 @cross_origin()
 def hello_world():
     return 'Hello World!'    
+    
+@app.route('/movies')
+@cross_origin()
+def get_movies():
+    body = {
+        "query": {
+            "match_all": {}
+        }
+    }
+
+    res = es.search(index="flick", doc_type="movies", body=body)
+
+    return jsonify(res['hits']['hits'])
 
 @app.route('/initialize')
 @cross_origin()
@@ -46,8 +59,10 @@ def initialize():
         mysql_row = {}
         es_row = {}
         for field in header:
-            mysql_row[field] = each[field]
-            es_row[field] = each[field]
+            if (field == "genres"):
+                es_row[field] = each[field].split("|")
+            else:
+                es_row[field] = each[field]            
         print("Inserting a movie"+str(mycol.count()))            
         mysql_row  = mycol.insert_one(mysql_row)               
         es.index(index='flick', doc_type='movies', id=mysql_row.inserted_id, document=es_row)
