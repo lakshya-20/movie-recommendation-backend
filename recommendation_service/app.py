@@ -53,19 +53,24 @@ def initialize():
     reader = csv.DictReader( csvfile )
     header=["movieId","imdb_link","poster","title","imdb_score","genres"]
     es.indices.delete(index='flick', ignore=[400, 404])
-    es.indices.create(index='flick')
-    row = {}
+    es.indices.create(index='flick')    
     for each in reader:
-        mysql_row = {}
+        mongodb_row = {}
         es_row = {}
         for field in header:
             if (field == "genres"):
                 es_row[field] = each[field].split("|")
+                mongodb_row[field] = each[field].split("|")
+            elif (field == "imdb_score"):
+                es_row[field] = round(float(each[field]),2)
+                mongodb_row[field] = round(float(each[field]),2)
             else:
-                es_row[field] = each[field]            
+                es_row[field] = each[field]           
+                mongodb_row[field] = each[field]       
+                     
         print("Inserting a movie"+str(mycol.count()))            
-        mysql_row  = mycol.insert_one(mysql_row)               
-        es.index(index='flick', doc_type='movies', id=mysql_row.inserted_id, document=es_row)
+        mongodb_row  = mycol.insert_one(mongodb_row)               
+        es.index(index='flick', doc_type='movies', id=mongodb_row.inserted_id, document=es_row)
     print("movies data synchronized "+str(mycol.count()))    
     return "Initialized"
 
