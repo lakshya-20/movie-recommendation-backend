@@ -39,11 +39,11 @@ router.get('/',async(req,res)=>{
 })
 
 // @route   Get api/movies/recommendation
-// @desc    Get list of 10 movies (dumnmy recommendations)
+// @desc    Get list of 10 movies (dumnmy recommendations) having highest ratings
 // @access  Public
 router.get('/recommendations',async(req,res)=>{    
     try{        
-        const movies= await Movies_data.find().limit(10);
+        const movies= await Movies_data.find().sort({"imdb_score": -1}).limit(10);
         res.json(movies);
     }catch(err){
         logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
