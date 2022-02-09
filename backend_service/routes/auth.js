@@ -65,7 +65,7 @@ router.post('/signin',async(req,res)=>{
         const savedUser=(await User.findOne({email:email}))
         if(!savedUser){
             logger.info("No user exists with that email")
-            return res.status(422).json({error:"Invalid username or password"})
+            return res.status(400).json({error:"Invalid username or password"})
         }
         if(!savedUser.password){
             if(savedUser.provider==="google"){
@@ -91,7 +91,7 @@ router.post('/signin',async(req,res)=>{
         }
         savedUser.reviews=movie_data
         const token=jwt.sign({_id:savedUser._id}, process.env.JWT_SECRET)
-        res.json({token,user:savedUser})
+        res.status(200).json({token,user:savedUser})
     }catch(err){
         logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
 		res.status(500).send('Server Error');

@@ -13,8 +13,8 @@ const movieSchema = new mongoose.Schema({
         required:true
     },
     genres:{
-        type:String,
-        required:true
+        type: Array,
+        default: []
     }
 })
 exports.Movies_data=mongoose.model("Movies_data",movieSchema)

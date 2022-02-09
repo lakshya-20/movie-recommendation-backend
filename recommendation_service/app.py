@@ -10,8 +10,8 @@ from flask import Flask,request, url_for, redirect, render_template,jsonify,Resp
 from flask_cors import CORS, cross_origin
 from elasticsearch import Elasticsearch
 
-myclient = pymongo.MongoClient(os.environ.get("MONGOURL"))
-mydb = myclient["flick"]
+mongo_client = pymongo.MongoClient(os.environ.get("MONGOURL"))
+mydb = mongo_client["flick"]
 es = Elasticsearch([{'host': 'elasticsearch', 'port': 9200}])
 app=Flask(__name__)
 cors = CORS(app)
@@ -37,9 +37,11 @@ def get_movies():
 
 @app.route('/initialize')
 @cross_origin()
-def initialize():        
+def initialize():  
+    mongo_client.drop_database("flick")
+    mydb = mongo_client["flick"]      
     mycol = mydb["genres_datas"]
-    mycol.drop()
+    # mycol.drop()
     genres_df=pd.read_csv('genres.csv')
     genre_json=genres_df.to_json(orient='records')
     genre_json=eval(genre_json)
@@ -48,7 +50,7 @@ def initialize():
     print("Genres data synchronized "+str(mycol.count()))
 
     mycol=mydb["movies_datas"]
-    mycol.drop()
+    # mycol.drop()
     csvfile = open('movies.csv', 'r',encoding='utf-8')
     reader = csv.DictReader( csvfile )
     header=["movieId","imdb_link","poster","title","imdb_score","genres"]
