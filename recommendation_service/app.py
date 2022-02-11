@@ -56,6 +56,7 @@ def initialize():
     header=["movieId","imdb_link","poster","title","imdb_score","genres"]
     es.indices.delete(index='flick', ignore=[400, 404])
     es.indices.create(index='flick')    
+    genres_list = set([])
     for each in reader:
         mongodb_row = {}
         es_row = {}
@@ -63,6 +64,7 @@ def initialize():
             if (field == "genres"):
                 es_row[field] = each[field].split("|")
                 mongodb_row[field] = each[field].split("|")
+                genres_list.update(each[field].split("|"))
             elif (field == "imdb_score"):
                 es_row[field] = round(float(each[field]),2)
                 mongodb_row[field] = round(float(each[field]),2)
@@ -74,6 +76,12 @@ def initialize():
         mongodb_row  = mycol.insert_one(mongodb_row)               
         es.index(index='flick', doc_type='movies', id=mongodb_row.inserted_id, document=es_row)
     print("movies data synchronized "+str(mycol.count()))    
+
+    mycol=mydb["genres"]
+    for genre in genres_list:
+        mycol.insert_one({"genre":genre})
+    print("genres list synchronized "+str(mycol.count()))
+
     return "Initialized"
 
 @app.route('/newReview/<uid>')

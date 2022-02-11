@@ -43,6 +43,7 @@ app.get('/',(req,res)=>{
 app.use('/api/auth',require('./routes/auth'))
 app.use('/api/movies',require('./routes/movies'))
 app.use('/api/reviews',require('./routes/reviews'))
+app.use('/api/genres',require('./routes/genres'))
 
 const PORT=process.env.PORT || 5000
 const server = app.listen(PORT,()=>{    
