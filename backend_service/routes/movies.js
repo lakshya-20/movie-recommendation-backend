@@ -164,7 +164,6 @@ router.post("/search", async (req, res) => {
         }
         return aggregations;
     }
-    console.log(JSON.stringify(getQueries(search_param, null, false)));
     const movies = await elastic_client.search({
         index: 'flick',
         body: {
@@ -174,7 +173,9 @@ router.post("/search", async (req, res) => {
             aggs: await getAggregations(search_param),
             post_filter: {  
                 bool: getQueries(search_param, null, false)
-            }
+            },
+            from: req.query.from,
+            size: req.query.size
         }
     })
 
