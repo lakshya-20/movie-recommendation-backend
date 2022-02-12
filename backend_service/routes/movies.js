@@ -84,12 +84,12 @@ router.get('/find/:title', async (req,res) => {
 // @desc    Filter movies by title, genre, imdb_score (elasticsearch)
 // @access  Public
 router.post("/search", async (req, res) => {
-    const search_param = sanitize(req.body);    
+    const search_param = sanitize(req.body);        
     function getQueries(search_param, filter_key = null, is_pre_filter = false){
         queries = [];
         for( key in search_param){
             if(is_pre_filter === true){
-                if(search_param[key]["type"] === "text" && search_param[key]["present"] === true){
+                if(search_param[key]["type"] === "text" && search_param[key]["present"] === true && search_param[key]["value"] !== ""){
                     queries.push({
                         match: {
                             [key]: {
@@ -104,7 +104,7 @@ router.post("/search", async (req, res) => {
             else{
                 if(search_param[key]["present"] === true){
                     if(key === filter_key) continue;
-                    else if (search_param[key]["type"] === "checkbox"){
+                    else if (search_param[key]["type"] === "checkbox" && search_param[key]["values"].length!=0){
                         if (key === "genres"){
                             queries.push({                                
                                 terms: { [`${key}.keyword`]: search_param[key]["values"] }
@@ -116,10 +116,9 @@ router.post("/search", async (req, res) => {
                                     [key]: search_param[key]["value"]                                
                                 }
                             })
-                        }
-                        
+                        }                        
                     }
-                    else if (search_param[key]["type"] === "range"){
+                    else if (search_param[key]["type"] === "range" && search_param[key]["value"]["min"] != null && search_param[key]["value"]["max"] != null){
                         queries.push({
                             range: {
                                 [key]: {
@@ -181,7 +180,12 @@ router.post("/search", async (req, res) => {
 
     function structure_response (search_param, body){
         var response = {}
-        response["movies"] = body["hits"]["hits"].map(movie => movie["_source"])
+        response["total"] = body.hits.total.value;
+        response["movies"] = body["hits"]["hits"].map(movie => {
+            temp = movie["_source"]
+            temp["_id"] = movie["_id"]
+            return temp
+        })
         response["filter_params"] = {}
         for( key in search_param){
             if (search_param[key]["type"] === "range"){
