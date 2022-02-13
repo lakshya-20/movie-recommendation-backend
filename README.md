@@ -10,10 +10,10 @@
     <a href = "https://documenter.getpostman.com/view/7376254/UVeGr6Kt"> API Documentation</a>
     .
     <a href="https://flick--backend.herokuapp.com/">View Live</a>
-    ·
+    <!-- ·
     <a href="https://github.com/lakshya-20/flick-backend/issues">Report Bug</a>
     ·
-    <a href="https://github.com/lakshya-20/flick-backend/issues">Request Feature</a>
+    <a href="https://github.com/lakshya-20/flick-backend/issues">Request Feature</a> -->
     .
     <a href="https://github.com/lakshya-20/flick-frontend">Frontend Repository</a>
   </p>
@@ -49,6 +49,7 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
+<img src="https://res.cloudinary.com/dstmsi8qv/image/upload/v1644771333/Flick/architecture_sqr4wq.png">
 
 The aim of this project is to build a web based application that will recommend movies to users that they might want to watch.
 <br>
@@ -81,7 +82,7 @@ Here's why:
 
 * [Docker](https://www.docker.com/)
 * [Docker-compose](https://docs.docker.com/compose/)
-* ~4 GB Free Main Memory
+* ~8 GB Free Main Memory
 
 ### Installation
 
