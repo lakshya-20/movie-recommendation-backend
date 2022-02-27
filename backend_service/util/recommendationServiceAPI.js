@@ -11,7 +11,7 @@ class RecommendationServiceAPI{
         return response.data;
     }
 
-    newReview(userId, callback){
+    async newReview(userId, callback){
         axios({
             method: 'get',
             url: RecommendationServiceAPI.baseUrl+"newReview/"+userId,

@@ -1,11 +1,10 @@
-const express = require('express');
-const cors = require('cors');
-var path = require('path');
-var passport = require('passport');
-var mustacheExpress = require('mustache-express');  
-
 const dotenv = require('dotenv')
 dotenv.config();
+const express = require('express');
+const cors = require('cors');
+const path = require('path');
+const passport = require('passport');
+const mustacheExpress = require('mustache-express');  
 
 const logger = require('./util/winstonLogger');
 const mongoConnection=require('./util/mongoConnection');
