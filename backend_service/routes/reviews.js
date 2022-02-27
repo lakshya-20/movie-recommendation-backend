@@ -4,7 +4,7 @@ const { v4: uuidV4 } = require('uuid');
 const sanitize = require('mongo-sanitize');
 const requireLogin = require('../util/requireLogin');
 const logger=require('../util/winstonLogger');
-
+const redis_client = require('../util/redisClient');
 const {User} = require('../models/user');
 const {Review} =  require('../models/review');
 
@@ -36,6 +36,19 @@ router.post('/',requireLogin,async(req,res)=>{
         await User.findByIdAndUpdate(userId,{
             $push:{reviews:result._id}
         },{new:true});
+        /**
+         * maintaning "new_reviews" queue in redis
+         * to async. call newReviews(uid) in
+         * recommendation microservice.
+         */
+        redis_client.lpos("new_reviews", userId, async(err,data)=>{
+            if(err){
+                logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+            }
+            if(data == null){
+                await redis_client.rpush("new_reviews", userId);
+            }
+        })        
         res.json({newReview:result});
     }catch(err){
         logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
