@@ -1,7 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const sanitize = require('mongo-sanitize');
-const logger=require('../util/winstonLogger');
+const logger = require('../util/winstonLogger');
 const {Movies_data} =  require('../models/movie');
 const router = express.Router()
 const elastic_client = require('../util/elasticsearchClient');
@@ -10,7 +10,7 @@ const redis_client=require('../util/redisClient');
 // @route   Get api/movies
 // @desc    Get list of all movies
 // @access  Public
-router.get('/',async(req,res)=>{    
+router.get('/', async(req,res)=>{    
     try{
         redis_client.get("movies",async (err,data)=>{            
             if(err){
@@ -22,7 +22,7 @@ router.get('/',async(req,res)=>{
             }
             else{                
                 const movies= await Movies_data.find();
-                redisClient.setex("movies",3600,JSON.stringify(movies));
+                redis_client.setex("movies",3600,JSON.stringify(movies));
                 res.json(movies);
             }            
         })
