@@ -5,6 +5,7 @@ import itertools
 import csv
 import json
 import os
+import redis
 from bson import json_util
 from flask import Flask,request, url_for, redirect, render_template,jsonify,Response
 from flask_cors import CORS, cross_origin
@@ -13,6 +14,7 @@ from elasticsearch import Elasticsearch
 mongo_client = pymongo.MongoClient(os.environ.get("MONGOURL"))
 mydb = mongo_client["flick"]
 es = Elasticsearch([{'host': 'elasticsearch', 'port': 9200}])
+redis_client = redis.Redis(host='redis', port=6379, db=0)
 app=Flask(__name__)
 cors = CORS(app)
 
@@ -37,7 +39,7 @@ def get_movies():
 
 @app.route('/initialize')
 @cross_origin()
-def initialize():  
+def initialize():
     mongo_client.drop_database("flick")
     mydb = mongo_client["flick"]      
     mycol = mydb["genres_datas"]
@@ -82,6 +84,12 @@ def initialize():
         mycol.insert_one({"genre":genre})
     print("genres list synchronized "+str(mycol.count()))
 
+    """
+    Delete outdated "movies" from redis cache
+    don't delete "new_reviews" because it is 
+    used to track "NEW_REVIEW" cron job
+    """
+    redis_client.delete('movies')    
     return "Initialized"
 
 @app.route('/newReview/<uid>')

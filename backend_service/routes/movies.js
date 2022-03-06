@@ -1,37 +1,33 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const sanitize = require('mongo-sanitize');
-const logger=require('../util/winstonLogger');
+const logger = require('../util/winstonLogger');
+const requireLogin = require('../util/requireLogin');
 const {Movies_data} =  require('../models/movie');
 const router = express.Router()
 const elastic_client = require('../util/elasticsearchClient');
+const redis_client=require('../util/redisClient');
+const RecommendationServiceAPI = require('../util/recommendationServiceAPI');
 
 // @route   Get api/movies
 // @desc    Get list of all movies
 // @access  Public
-router.get('/',async(req,res)=>{    
+router.get('/', async(req,res)=>{    
     try{
-        if(process.env.NODE_ENV==="development"){
-            const redisClient=require('../util/redisClient');
-            redisClient.get("movies",async (err,data)=>{            
-                if(err){
-                    logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-                    res.status(500).send("Server Error");
-                }
-                if(data!=null){                                                
-                    res.send(JSON.parse(data));
-                }
-                else{                
-                    const movies= await Movies_data.find();
-                    redisClient.setex("movies",3600,JSON.stringify(movies));
-                    res.json(movies);
-                }            
-            })
-        }
-        else {
-            const movies= await Movies_data.find();
-            res.json(movies);
-        }
+        redis_client.get("movies",async (err,data)=>{            
+            if(err){
+                logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+                res.status(500).send("Server Error");
+            }
+            if(data!=null){                                                
+                res.send(JSON.parse(data));
+            }
+            else{                
+                const movies= await Movies_data.find();
+                redis_client.setex("movies",3600,JSON.stringify(movies));
+                res.json(movies);
+            }            
+        })
     }catch(err){
         logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send('Server Error');
@@ -39,16 +35,37 @@ router.get('/',async(req,res)=>{
 })
 
 // @route   Get api/movies/recommendation
-// @desc    Get list of 10 movies (dumnmy recommendations) having highest ratings
+// @desc    Get list of 10 recommendated movies
 // @access  Public
-router.get('/recommendations',async(req,res)=>{    
+router.get('/recommendations',requireLogin, async(req,res)=>{
     try{        
-        const movies= await Movies_data.find().sort({"imdb_score": -1}).limit(10);
-        res.json(movies);
+        const recommendationServiceAPI = new RecommendationServiceAPI();
+        let recommendations = await recommendationServiceAPI.getRecommendations(req.user._id);
+        recommendations = await Promise.all(recommendations.map( movie => {
+            movie['_id'] = movie['_id']['$oid'];
+            return movie;
+        }))
+        if (recommendations.length == 0){
+            recommendations = await Movies_data.find().sort({rating:-1}).limit(10);
+        }
+        res.json(recommendations);
     }catch(err){
         logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
         res.status(500).send('Server Error');
-    }    
+    }
+})
+
+// @route   Get api/movies/recommendation/newUser
+// @desc    Get list of 10 top rated movies
+// @access  Public
+router.get('/recommendations/newUser', async(req,res)=>{
+    try{
+        const recommendations = await Movies_data.find().sort({rating:-1}).limit(10);
+        res.json(recommendations);
+    }catch(err){
+        logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
+        res.status(500).send('Server Error');
+    }
 })
 
 // @route   Get api/movies/:movieId
