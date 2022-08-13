@@ -1,12 +1,10 @@
 const express = require('express')
-const mongoose=require('mongoose')
 const bcrypt = require('bcryptjs')
 const jwt= require('jsonwebtoken');
 var passport = require('passport');
 
 const router = express.Router()
 const logger = require('../util/winstonLogger')
-
 
 const {User} = require('../models/user');
 const {Review} = require('../models/review');
@@ -15,18 +13,17 @@ require('../util/passport');
 router.post('/signup',async(req,res)=>{
     const {name,email,password,photo,gender}=req.body
     if(!email || !password || !name || !gender){
-        res.status(422).json({error:"all entries required"})
+        res.status(422).json({error:"all fields required"})
     }
-
     try{
         const savedUser=(await User.findOne({email:email}))
-        if(savedUser){            
+        if(savedUser){
             if(savedUser.provider==="google"){
                 logger.info("This email address is already being used with a Google account")
-                return res.status(422).json({error:"This email address is already being used with a Google account"})    
+                return res.status(400).json({error:"This email address is already being used with a Google account"})
             }
             logger.info("User already exists with that mail")
-            return res.status(422).json({error:"User already exists with that mail"})
+            return res.status(400).json({error:"User already exists with that mail"})
         }
         var user = new User({
             email,
@@ -49,10 +46,9 @@ router.post('/signup',async(req,res)=>{
         user.reviews=movie_data
         const token=jwt.sign({_id:user._id},process.env.JWT_SECRET)
         res.json({token,user:user})
-
     }catch(err){
         logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-		res.status(500).send('Server Error');
+		res.status(500).json({error: "Server error"});
     }
 })
 
@@ -65,21 +61,21 @@ router.post('/signin',async(req,res)=>{
         const savedUser=(await User.findOne({email:email}))
         if(!savedUser){
             logger.info("No user exists with that email")
-            return res.status(400).json({error:"Invalid username or password"})
+            return res.status(400).json({error: "Invalid username or password"})
         }
         if(!savedUser.password){
             if(savedUser.provider==="google"){
                 logger.info("This email address is already being used with a Google account")
-                return res.status(400).json({ msg: 'Try logging with google account.' });    
+                return res.status(400).json({error: 'Try logging with google account'});
             }
             logger.info("Invalid credentials");
-            return res.status(400).json({ msg: 'Invalid Credentials' });
+            return res.status(400).json({error: 'Invalid Credentials'});
         }
 
         const isMatch = await bcrypt.compare(password, savedUser.password);
 
 		if (!isMatch) {
-			return res.status(400).json({ msg: 'Invalid Credentials' });
+			return res.status(400).json({error: 'Invalid Credentials'});
 		}
 
         savedUser.password=undefined
@@ -94,7 +90,7 @@ router.post('/signin',async(req,res)=>{
         res.status(200).json({token,user:savedUser})
     }catch(err){
         logger.error(`${err} - ${req.originalUrl} - ${req.method} - ${req.ip}`);
-		res.status(500).send('Server Error');
+		res.status(500).json({error: "Server error"});
     }
 })
 
